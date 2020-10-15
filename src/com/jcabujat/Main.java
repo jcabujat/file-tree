@@ -30,5 +30,23 @@ public class Main {
         System.out.println(separator);
         separator = FileSystems.getDefault().getSeparator();
         System.out.println(separator);
+
+        try {
+            Path tempFile = Files.createTempFile("myapp", ".appext");
+            System.out.println("Temporary file path = " + tempFile.toAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Iterable<FileStore> stores = FileSystems.getDefault().getFileStores();
+        for (FileStore store : stores) {
+            System.out.println(store + " - " + store.name());
+        }
+
+        System.out.println("=====================");
+        Iterable<Path> rootPaths = FileSystems.getDefault().getRootDirectories();
+        for (Path path : rootPaths) {
+            System.out.println(path);
+        }
     }
 }
