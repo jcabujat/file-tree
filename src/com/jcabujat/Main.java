@@ -7,46 +7,22 @@ import java.nio.file.*;
 public class Main {
 
     public static void main(String[] args) {
-        Path directory = FileSystems.getDefault().getPath("FileTree" + File.separator + "Dir2");
-        DirectoryStream.Filter<Path> filter = Files::isRegularFile; // method reference
-//        DirectoryStream.Filter<Path> filter = entry -> (Files.isRegularFile(entry)); // lambda equivalent of the below code
-//        DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {
-//            @Override
-//            public boolean accept(Path entry) throws IOException {
-//                return (Files.isRegularFile(entry));
-//            }
-//        };
-        try (DirectoryStream<Path> contents = Files.newDirectoryStream(directory, filter)) { // filtering the content using the customized filter object
 
-            for (Path file : contents) {
-                System.out.println(file.getFileName());
-            }
-
-        } catch (IOException | DirectoryIteratorException e) {
-            e.printStackTrace();
-        }
-
-        String separator = File.separator;
-        System.out.println(separator);
-        separator = FileSystems.getDefault().getSeparator();
-        System.out.println(separator);
-
+        System.out.println("----- Walking Tree for Dir2 --------");
+        Path dir2Path = FileSystems.getDefault().getPath("FileTree" + File.separator + "Dir2");
         try {
-            Path tempFile = Files.createTempFile("myapp", ".appext");
-            System.out.println("Temporary file path = " + tempFile.toAbsolutePath());
+            Files.walkFileTree(dir2Path, new PrintNames());
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
 
-        Iterable<FileStore> stores = FileSystems.getDefault().getFileStores();
-        for (FileStore store : stores) {
-            System.out.println(store + " - " + store.name());
-        }
-
-        System.out.println("=====================");
-        Iterable<Path> rootPaths = FileSystems.getDefault().getRootDirectories();
-        for (Path path : rootPaths) {
-            System.out.println(path);
+        System.out.println("----- Copy Dir2 files to Dir4/Dir2Copy ------");
+        Path targetPath = FileSystems.getDefault().getPath("FileTree" + File.separator + "Dir4" +
+                File.separator + "Dir2Copy");
+        try {
+            Files.walkFileTree(dir2Path, new CopyFiles(dir2Path, targetPath));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 }
